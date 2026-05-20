@@ -1,12 +1,11 @@
-const QUALITIES = ["1080", "720", "540", "480"];
+const QUALITIES = [ "1080", "720", "540", "480" ];
 
 export default new class SubsPlease {
-  url = atob("aHR0cHM6Ly9zdWJzcGxlYXNlLm9yZy9hcGkvP2Y9c2VhcmNoJnR6PVVUQyZxPQ==");
-
+  url=atob("aHR0cHM6Ly9zdWJzcGxlYXNlLm9yZy9hcGkvP2Y9c2VhcmNoJnR6PVVUQyZxPQ==");
+  
   map(entries, targetResolution) {
     return entries.map(entry => {
       const targetDownload = entry.downloads.find(d => d.res === targetResolution) || entry.downloads[0];
-
       return {
         title: `[SubsPlease] ${entry.show} - ${entry.episode} (${targetDownload.res}p)`,
         link: targetDownload.magnet,
@@ -14,9 +13,9 @@ export default new class SubsPlease {
         leechers: 0,
         downloads: 0,
         hash: this._extractHash(targetDownload.magnet),
-        size: null,
+        size: 0,
         accuracy: "high",
-        type: "episode",
+        type: void 0,
         date: new Date(entry.release_date)
       };
     });
@@ -27,65 +26,35 @@ export default new class SubsPlease {
     return match ? match[1].toLowerCase() : null;
   }
 
-  _extractTitle(args) {
-    // Attempt to extract the title from standard Hayase metadata parameters
-    const title = args.romaji || args.english || args.title || args.name || args.query || (args.aliases && args.aliases.length > 0 ? args.aliases[0] : null);
-    
-    if (!title) {
-      // If none exist, output the exact keys provided by the application engine for debugging
-      throw new Error(`Metadata missing. Available Hayase parameters: ${Object.keys(args).join(", ")}`);
-    }
-    
-    return title;
-  }
-
-  async single(args, options) {
+  async single({titles: titles, episode: episode, resolution: resolution}) {
     if (!navigator.onLine) return [];
-    
-    const title = this._extractTitle(args);
-    const targetRes = args.resolution || "1080";
-    const searchQuery = encodeURIComponent(`${title} ${args.episode || ''}`.trim());
+    if (!titles?.length) throw new Error("No titles provided");
+
+    const targetRes = resolution || "1080";
+    const epStr = (episode && Number(episode) < 10) ? `0${episode}` : (episode || "");
+    const query = encodeURIComponent(`${titles[0]} ${epStr}`.trim());
 
     try {
-      const res = await fetch(this.url + searchQuery);
-      const data = await res.json();
-      const entries = Object.values(data).filter(entry => entry.episode === String(args.episode));
-
-      return entries.length ? this.map(entries, targetRes) : [];
-    } catch (err) {
-      return [];
-    }
-  }
-
-  async batch(args, options) {
-    if (!navigator.onLine) return [];
-    
-    const title = this._extractTitle(args);
-    const targetRes = args.resolution || "1080";
-    const searchQuery = encodeURIComponent(title);
-
-    try {
-      const res = await fetch(this.url + searchQuery);
-      const data = await res.json();
-      const entries = Object.values(data);
+      const res = await fetch(this.url + query), data = await res.json();
+      if (data.error || Object.keys(data).length === 0) return [];
       
+      const entries = Object.values(data).filter(entry => !episode || entry.episode === String(epStr) || entry.episode === String(episode));
       return entries.length ? this.map(entries, targetRes) : [];
-    } catch (err) {
+    } catch (error) {
       return [];
     }
   }
 
-  async movie(args, options) {
-    return this.single({ ...args, episode: "" }, options);
-  }
+  batch=() => [];
+  
+  movie=() => [];
 
   async test() {
     try {
-      const res = await fetch(atob("aHR0cHM6Ly9zdWJzcGxlYXNlLm9yZy9hcGkvP2Y9c2NoZWR1bGUmdHo9VVRD"));
-      if (!res.ok) throw new Error("Failed to load data.");
-      return true;
+      if (!(await fetch(atob("aHR0cHM6Ly9zdWJzcGxlYXNlLm9yZy9hcGkvP2Y9c2NoZWR1bGUmdHo9VVRD"))).ok) throw new Error("Failed to load data from SubsPlease! Is the site down?");
+      return !0;
     } catch (error) {
-      throw new Error("Could not reach SubsPlease.");
+      throw new Error("Could not reach SubsPlease! Does the site work in your region?");
     }
   }
 };
