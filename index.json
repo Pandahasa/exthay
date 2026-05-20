@@ -10,8 +10,8 @@
     "media": "sub",
     "languages": ["US"],
     "icon": "https://subsplease.org/favicon.ico",
-    "update": "https://<USERNAME>.github.io/<REPOSITORY>/index.json",
-    "code": "https://<USERNAME>.github.io/<REPOSITORY>/subsplease.js",
+    "update": "https://Pandahasa.github.io/exthay/index.json",
+    "code": "https://Pandahasa.github.io/exthay/subsplease.js",
     "options": {}
   }
 ]
