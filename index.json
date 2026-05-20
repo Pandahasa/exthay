@@ -1,20 +1,20 @@
 [
   {
     "manifestVersion": 2,
-    "name": "SubsPlease",
-    "id": "subsplease",
-    "version": "1.0.1",
-    "type": "torrent",
+    "name": "AnimeTosho Panda",
+    "id": "animetoshopanda",
+    "version": "1.0.0",
+    "type": "nzb",
     "accuracy": "high",
     "ratio": 0,
     "media": "sub",
     "languages": [
       "US"
     ],
-    "url": "aHR0cHM6Ly9zdWJzcGxlYXNlLm9yZw==",
-    "icon": "https://subsplease.org/favicon.ico",
+    "url": "aHR0cHM6Ly9hbmltZXRvc2hvLnh5eg==",
+    "icon": "https://animetosho.xyz/inc/favicon.ico",
     "update": "https://Pandahasa.github.io/exthay/index.json",
-    "code": "https://Pandahasa.github.io/exthay/subsplease.js",
+    "code": "https://Pandahasa.github.io/exthay/animetoshopanda.js",
     "options": {}
   }
 ]
